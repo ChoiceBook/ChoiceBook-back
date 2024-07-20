@@ -1,0 +1,45 @@
+{
+  "data1": {
+    "plot": {
+      "plot_id": 4,
+      "user_id": 124,
+      "title": "여자아이돌",
+      "description": "This is a sample description for the plot.",
+      "created_at": "2024-07-21T12:34:56Z"
+    },
+    "items": [
+      {
+        "item_id": 7,
+        "plot_id": 4,
+        "item_name": "카리나",
+        "item_desc": "This is the description for Item 7.",
+        "item_image_url": "https://thumb.mt.co.kr/06/2020/12/2020121116305397354_1.jpg/dims/optimize/"
+      },
+      {
+        "item_id": 8,
+        "plot_id": 4,
+        "item_name": "윈터",
+        "item_desc": "This is the description for Item 8.",
+        "item_image_url": "https://i.namu.wiki/i/xgX86YsYADRqQESThC45YBsgMN6jTnHxHOopRA-bBRhxW6CkmjwFxWScaNQRpHH9p3xsP-M8y3PaTLgPzXUckQ.webp"
+      }
+    ],
+    "ranks": [
+      {
+        "rank_id": 7,
+        "plot_id": 4,
+        "user_id": 200,
+        "item_id": 7,
+        "rank_value": 1,
+        "ranked_at": "2024-07-21T13:00:00Z"
+      },
+      {
+        "rank_id": 8,
+        "plot_id": 4,
+        "user_id": 200,
+        "item_id": 8,
+        "rank_value": 2,
+        "ranked_at": "2024-07-21T13:00:00Z"
+      }
+    ]
+  }
+}
