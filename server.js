@@ -82,3 +82,40 @@ app.get('/api/items/:item_id', async (req, res) => {
 });
 
 
+app.get('/api/plots', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM Plots');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching plots:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+});
+
+app.get('/api/plots/:plot_id', async (req, res) => {
+  const { plot_id } = req.params;
+  try {
+    const [rows] = await pool.query(
+      'SELECT * FROM Plots WHERE plot_id = ?',
+      [plot_id]
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching plot:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+});
+app.get('/api/plots/:plot_id/items', async (req, res) => {
+  const { plot_id } = req.params;
+  try {
+    const [rows] = await pool.query(
+      `SELECT * FROM Items WHERE plot_id = ?`,
+      [plot_id]
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching items for plot:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+});
+
