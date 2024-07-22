@@ -18,6 +18,13 @@ app.use(cors({
 }));
 app.use(express.json());
 
+app.use((req, res, next) => {
+  if (req.method === 'GET' || req.method === 'POST') {
+    console.log(`${req.method} request to ${req.url} at ${new Date().toISOString()}`);
+  }
+  next();
+});
+
 app.options('*', cors()); // 올바른 CORS 설정
 
 // 라우트 설정
