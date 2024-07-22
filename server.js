@@ -1,28 +1,39 @@
-//필요한 모듈 불러오기
+// 필요한 모듈 불러오기
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const pool = require('./config/database');
 
-const authRoutes = require('./routes/auth')
-//const plotRoutes = require('./routes/plot')
+const authRoutes = require('./routes/auth');
+// const plotRoutes = require('./routes/plot');
 
-//Express 애플리케이션 생성 및 포트 설정
+// Express 애플리케이션 생성 및 포트 설정
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 80; // 포트를 80으로 설정
 
-//미들웨어 설정
-app.use(cors());
+// 미들웨어 설정
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://kcloudvpn.kaist.ac.kr'],
+  credentials: true
+}));
 app.use(express.json());
-//app.options('*'.ors());
 
-//라우트 설정
+app.use((req, res, next) => {
+  if (req.method === 'GET' || req.method === 'POST') {
+    console.log(`${req.method} request to ${req.url} at ${new Date().toISOString()}`);
+  }
+  next();
+});
+
+app.options('*', cors()); // 올바른 CORS 설정
+
+// 라우트 설정
 app.use('/api/auth', authRoutes);
-//app.use('api/plot', plotRoutes)
+// app.use('/api/plot', plotRoutes);
 
-//서버 시작
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`)
+// 서버 시작
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on port ${port}`);
 });
 
 app.get('/api/users/:user_id/categories/:category_id/plots', async (req, res) => {
@@ -70,4 +81,41 @@ app.get('/api/items/:item_id', async (req, res) => {
   }
 });
 
+
+app.get('/api/plots', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM Plots');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching plots:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+});
+
+app.get('/api/plots/:plot_id', async (req, res) => {
+  const { plot_id } = req.params;
+  try {
+    const [rows] = await pool.query(
+      'SELECT * FROM Plots WHERE plot_id = ?',
+      [plot_id]
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching plot:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+});
+app.get('/api/plots/:plot_id/items', async (req, res) => {
+  const { plot_id } = req.params;
+  try {
+    const [rows] = await pool.query(
+      `SELECT * FROM Items WHERE plot_id = ?`,
+      [plot_id]
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching items for plot:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+});
 
