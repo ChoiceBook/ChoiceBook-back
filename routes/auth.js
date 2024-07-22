@@ -20,8 +20,8 @@ const generateRefreshToken = (userId) => {
 // 회원가입 라우트
 router.post('/register', async (req, res) => {
     try {
-        const { email, password } = req.body;
-        console.log('회원가입 요청을 받았습니다:', { email });
+        const { email, password, username } = req.body; // username 추가
+        console.log('회원가입 요청을 받았습니다:', { email, username });
 
         // 이메일 중복 체크
         const [users] = await pool.query('SELECT * FROM Users WHERE email = ?', [email]);
@@ -33,8 +33,8 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // 새 사용자 등록
-        await pool.query('INSERT INTO Users (email, password) VALUES (?, ?)', [email, hashedPassword]);
-        console.log('사용자 등록 성공:', { email });
+        await pool.query('INSERT INTO Users (email, password, username) VALUES (?, ?, ?)', [email, hashedPassword, username]);
+        console.log('사용자 등록 성공:', { email, username });
 
         res.status(201).json({ message: '회원가입이 완료되었습니다.' });
     } catch (error) {
@@ -57,7 +57,7 @@ router.post('/login', async (req, res) => {
         }
         const user = users[0];
         console.log('유저', user.username);
-        
+
         // 비밀번호 검증
         const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
@@ -99,7 +99,7 @@ router.post('/refresh-token', async (req, res) => {
         }
 
         const user = users[0];
-        
+
         // 새로운 Access Token 생성
         const newAccessToken = generateAccessToken(user.user_id);
 
