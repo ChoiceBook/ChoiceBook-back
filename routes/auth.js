@@ -1,4 +1,3 @@
-// 필요한 모듈 불러오기
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -21,21 +20,21 @@ const generateRefreshToken = (userId) => {
 // 회원가입 라우트
 router.post('/register', async (req, res) => {
     try {
-        const { username, password } = req.body;
-        console.log('회원가입 요청을 받았습니다:', { username });
+        const { email, password } = req.body;
+        console.log('회원가입 요청을 받았습니다:', { email });
 
-        // 사용자 이름 중복 체크
-        const [users] = await pool.query('SELECT * FROM Users WHERE username = ?', [username]);
+        // 이메일 중복 체크
+        const [users] = await pool.query('SELECT * FROM Users WHERE email = ?', [email]);
         if (users.length > 0) {
-            return res.status(400).json({ message: '이미 존재하는 사용자 이름입니다.' });
+            return res.status(400).json({ message: '이미 존재하는 이메일입니다.' });
         }
 
         // 비밀번호 해싱
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // 새 사용자 등록
-        await pool.query('INSERT INTO Users (username, password) VALUES (?, ?)', [username, hashedPassword]);
-        console.log('사용자 등록 성공:', { username });
+        await pool.query('INSERT INTO Users (email, password) VALUES (?, ?)', [email, hashedPassword]);
+        console.log('사용자 등록 성공:', { email });
 
         res.status(201).json({ message: '회원가입이 완료되었습니다.' });
     } catch (error) {
@@ -47,20 +46,22 @@ router.post('/register', async (req, res) => {
 // 로그인 라우트
 router.post('/login', async (req, res) => {
     try {
-        const { username, password } = req.body;
-        console.log('로그인 요청을 받았습니다:', { username });
+        const { email, password } = req.body;
+        console.log('로그인 요청을 받았습니다:', { email });
 
         // 사용자 조회
-        const [users] = await pool.query('SELECT * FROM Users WHERE username = ?', [username]);
+        const [users] = await pool.query('SELECT * FROM Users WHERE email = ?', [email]);
         if (users.length === 0) {
-            return res.status(401).json({ message: '가입되지 않은 사용자입니다.' });
+            console.log('가입되지 않은 이메일입니다.');
+            return res.status(401).json({ message: '가입되지 않은 이메일입니다.' });
         }
-
         const user = users[0];
-
+        console.log('유저', user.username);
+        
         // 비밀번호 검증
         const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
+            console.log('잘못된 비밀번호입니다.');
             return res.status(401).json({ message: '잘못된 비밀번호입니다.' });
         }
 
@@ -72,8 +73,8 @@ router.post('/login', async (req, res) => {
 
         // 데이터베이스에 Refresh Token 저장
         await pool.query('UPDATE Users SET refresh_token = ? WHERE user_id = ?', [refreshToken, user.user_id]);
-
-        res.json({ userId: user.user_id, username, accessToken, refreshToken });
+        console.log('로그인 성공: ', user.username);
+        res.json({ userId: user.user_id, email, accessToken, refreshToken });
     } catch (error) {
         console.error('로그인 중 오류 발생:', error.message);
         res.status(500).json({ message: '서버 오류가 발생했습니다.' });
