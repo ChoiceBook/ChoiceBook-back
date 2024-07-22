@@ -1,28 +1,32 @@
-//필요한 모듈 불러오기
+// 필요한 모듈 불러오기
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const pool = require('./config/database');
 
-const authRoutes = require('./routes/auth')
-//const plotRoutes = require('./routes/plot')
+const authRoutes = require('./routes/auth');
+// const plotRoutes = require('./routes/plot');
 
-//Express 애플리케이션 생성 및 포트 설정
+// Express 애플리케이션 생성 및 포트 설정
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 80; // 포트를 80으로 설정
 
-//미들웨어 설정
-app.use(cors());
+// 미들웨어 설정
+app.use(cors({
+  origin: ['http://localhost:3001', 'https://kcloudvpn.kaist.ac.kr'],
+  credentials: true
+}));
 app.use(express.json());
-//app.options('*'.ors());
 
-//라우트 설정
+app.options('*', cors()); // 올바른 CORS 설정
+
+// 라우트 설정
 app.use('/api/auth', authRoutes);
-//app.use('api/plot', plotRoutes)
+// app.use('/api/plot', plotRoutes);
 
-//서버 시작
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`)
+// 서버 시작
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on port ${port}`);
 });
 
 app.get('/api/users/:user_id/categories/:category_id/plots', async (req, res) => {
