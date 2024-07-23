@@ -36,4 +36,29 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.put('/:item_id', async (req, res) => {
+  const { item_id } = req.params;
+  const { item_image_url } = req.body;
+
+  console.log('Received request to update item:', req.body);
+
+  try {
+    const [result] = await pool.query(
+      'UPDATE Items SET item_image_url = ? WHERE item_id = ?',
+      [item_image_url, item_id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+
+    console.log('Item updated successfully:', result);
+
+    res.status(200).json({ message: 'Item updated successfully' });
+  } catch (error) {
+    console.error('Error updating item:', error);
+    res.status(500).json({ message: 'Server error occurred' });
+  }
+});
+
 module.exports = router;
