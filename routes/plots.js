@@ -13,6 +13,20 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.post('/', async (req, res) => {
+    const { user_id, title, description } = req.body;
+    try {
+      const [result] = await pool.query(
+        'INSERT INTO Plots (user_id, title, description) VALUES (?, ?, ?)',
+        [user_id, title, description]
+      );
+      res.status(201).json({ message: 'Plot created successfully', plotId: result.insertId });
+    } catch (error) {
+      console.error('Error creating plot:', error);
+      res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+    }
+  });
+
 router.get('/:plot_id', async (req, res) => {
   const { plot_id } = req.params;
   try {

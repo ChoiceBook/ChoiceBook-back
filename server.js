@@ -2,11 +2,13 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const path = require('path');
+const pool = require('./config/database');
 
 const authRoutes = require('./routes/auth');
 const plotRoutes = require('./routes/plots');
 const userRoutes = require('./routes/users');
 const itemRoutes = require('./routes/items');
+const plotCategoryRoutes = require('./routes/plotcategories'); // 새로운 라우트 추가
 
 // Express 애플리케이션 생성 및 포트 설정
 const app = express();
@@ -35,6 +37,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/plots', plotRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/items', itemRoutes);
+app.use('/api/plotcategories', plotCategoryRoutes); // 새로운 라우트 추가
 
 // 서버 시작
 app.listen(port, '0.0.0.0', () => {
