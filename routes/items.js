@@ -16,4 +16,24 @@ router.get('/:item_id', async (req, res) => {
   }
 });
 
+router.post('/', async (req, res) => {
+  const { plot_id, item_name, item_image_url } = req.body;
+
+  console.log('Received request body:', req.body);
+
+  try {
+    const [result] = await pool.query(
+      'INSERT INTO Items (plot_id, item_name, item_image_url) VALUES (?, ?, ?)',
+      [plot_id, item_name, item_image_url]
+    );
+
+    console.log('Database insert result:', result);
+
+    res.status(201).json({ message: 'Item created successfully', itemId: result.insertId });
+  } catch (error) {
+    console.error('Error creating item:', error);
+    res.status(500).json({ message: 'Server error occurred' });
+  }
+});
+
 module.exports = router;
