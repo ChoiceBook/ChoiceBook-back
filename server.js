@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const pool = require('./config/database');
+const path = require('path')
 
 const authRoutes = require('./routes/auth');
 // const plotRoutes = require('./routes/plot');
@@ -16,7 +17,10 @@ app.use(cors({
   origin: ['http://localhost:3000', 'https://kcloudvpn.kaist.ac.kr'],
   credentials: true
 }));
+
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 app.use((req, res, next) => {
   if (req.method === 'GET' || req.method === 'POST') {
