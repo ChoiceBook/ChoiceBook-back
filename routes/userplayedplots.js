@@ -4,17 +4,17 @@ const pool = require('../config/database');
 
 // 플롯과 카테고리를 연결하는 엔드포인트
 router.post('/', async (req, res) => {
-  const { plot_id, user_id, item_id, rank_value } = req.body;
+  const { user_id, plot_id } = req.body;
 
   try {
     const [result] = await pool.query(
-      'INSERT INTO Ranks (plot_id, user_id, item_id, rank_value) VALUES (?, ?, ?, ?)',
-      [plot_id, user_id, item_id, rank_value]
+      'INSERT INTO UserPlayedPlots (user_id, plot_id) VALUES (?, ?)',
+      [user_id, plot_id]
     );
 
-    res.status(201).json({ message: ' Rank uploaded successfully' });
+    res.status(201).json({ message: ' Played plot updated successfully' });
   } catch (error) {
-    console.error('Error updating rank:', error);
+    console.error('Error updating played plots:', error);
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 
