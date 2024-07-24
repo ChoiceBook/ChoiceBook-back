@@ -20,4 +20,18 @@ router.get('/:user_id/categories/:category_id/plots', async (req, res) => {
   }
 });
 
+router.get('/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+  try {
+    const [rows] = await pool.query(
+      'SELECT * FROM Users WHERE user_id = ?',
+      [user_id]
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+});
+
 module.exports = router;
