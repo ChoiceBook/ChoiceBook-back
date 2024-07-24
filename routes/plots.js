@@ -63,7 +63,7 @@ router.get('/:plot_id/random-image', async (req, res) => {
 
 router.get('/:plot_id/items', async (req, res) => {
   const { plot_id } = req.params;
-  try {
+  try { 
     const [rows] = await pool.query(
       `SELECT * FROM Items WHERE plot_id = ?`,
       [plot_id]
@@ -109,7 +109,45 @@ router.get('/:plot_id/users/:user_id/ranks', async (req, res) => {
   }
 });
 
+router.delete('/:plot_id', async (req, res) => {
+  const { plot_id } = req.params;
 
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
 
+    // Delete from UserPlayedPlots
+    await connection.query(
+      'DELETE FROM UserPlayedPlots WHERE plot_id = ?',
+      [plot_id]
+    );
+
+    // Delete from PlotCategories
+    await connection.query(
+      'DELETE FROM PlotCategories WHERE plot_id = ?',
+      [plot_id]
+    );
+
+    // Delete from Plots
+    const [result] = await connection.query(
+      'DELETE FROM Plots WHERE plot_id = ?',
+      [plot_id]
+    );
+
+    if (result.affectedRows === 0) {
+      await connection.rollback();
+      return res.status(404).json({ message: 'Plot not found' });
+    }
+
+    await connection.commit();
+    res.status(200).json({ message: 'Plot deleted successfully' });
+  } catch (error) {
+    await connection.rollback();
+    console.error('Error deleting plot:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  } finally {
+    connection.release();
+  }
+});
 
 module.exports = router;

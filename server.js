@@ -12,6 +12,7 @@ const itemRoutes = require('./routes/items');
 const rankRoutes = require('./routes/ranks')
 const plotCategoryRoutes = require('./routes/plotcategories'); 
 const userPlayedPlotsRoutes = require('./routes/userplayedplots');
+const postcardImageRoute = require('./routes/postcardImage'); 
 
 // Express 애플리케이션 생성 및 포트 설정
 const app = express();
@@ -61,6 +62,7 @@ app.use('/api/items', itemRoutes);
 app.use('/api/ranks', rankRoutes);
 app.use('/api/userplayedplots', userPlayedPlotsRoutes);
 app.use('/api/plotcategories', plotCategoryRoutes); 
+app.use('/api/postcard-image', postcardImageRoute); 
 
 // 서버 시작
 app.listen(port, '0.0.0.0', () => {

@@ -10,7 +10,7 @@ const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
 // 유틸리티 함수: 토큰 생성
 const generateAccessToken = (userId) => {
-    return jwt.sign({ userId }, ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+    return jwt.sign({ userId }, ACCESS_TOKEN_SECRET, { expiresIn: '60m' });
 };
 
 const generateRefreshToken = (userId) => {
