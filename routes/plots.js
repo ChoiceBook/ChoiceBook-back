@@ -58,10 +58,17 @@ router.get('/:plot_id/items', async (req, res) => {
 
 router.get('/:plot_id/users/:user_id/ranks', async (req, res) => {
   const { plot_id, user_id } = req.params;
-  
+
   try {
     const query = `
-      SELECT r.rank_id, r.plot_id, r.user_id, r.item_id, r.rank_value, r.ranked_at
+      SELECT 
+        r.rank_id, 
+        r.plot_id, 
+        r.user_id, 
+        r.item_id, 
+        r.rank_value, 
+        r.ranked_at,
+        r.increasement
       FROM Ranks r
       JOIN (
         SELECT item_id, MAX(ranked_at) AS latest_ranked_at
@@ -73,7 +80,7 @@ router.get('/:plot_id/users/:user_id/ranks', async (req, res) => {
       WHERE r.plot_id = ? AND r.user_id = ?
       ORDER BY r.rank_value;
     `;
-    
+
     const [rows] = await pool.query(query, [plot_id, user_id, plot_id, user_id]);
     res.json(rows);
   } catch (error) {
@@ -81,6 +88,7 @@ router.get('/:plot_id/users/:user_id/ranks', async (req, res) => {
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 });
+
 
 
 
