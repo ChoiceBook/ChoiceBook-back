@@ -41,6 +41,26 @@ router.get('/:plot_id', async (req, res) => {
   }
 });
 
+router.get('/:plot_id/random-image', async (req, res) => {
+  const { plot_id } = req.params;
+  try {
+    const [rows] = await pool.query(
+      'SELECT item_image_url FROM Items WHERE plot_id = ?',
+      [plot_id]
+    );
+
+    if (rows.length > 0) {
+      const randomItem = rows[Math.floor(Math.random() * rows.length)];
+      res.json({ item_image_url: randomItem.item_image_url });
+    } else {
+      res.status(404).json({ error: 'Plot not found or no items available' });
+    }
+  } catch (error) {
+    console.error('Error fetching random image:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+});
+
 router.get('/:plot_id/items', async (req, res) => {
   const { plot_id } = req.params;
   try {
