@@ -9,7 +9,9 @@ const authRoutes = require('./routes/auth');
 const plotRoutes = require('./routes/plots');
 const userRoutes = require('./routes/users');
 const itemRoutes = require('./routes/items');
-const plotCategoryRoutes = require('./routes/plotcategories'); // 새로운 라우트 추가
+const rankRoutes = require('./routes/ranks')
+const plotCategoryRoutes = require('./routes/plotcategories'); 
+const userPlayedPlotsRoutes = require('./routes/userplayedplots');
 
 // Express 애플리케이션 생성 및 포트 설정
 const app = express();
@@ -56,7 +58,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/plots', plotRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/items', itemRoutes);
-app.use('/api/plotcategories', plotCategoryRoutes); // 새로운 라우트 추가
+app.use('/api/ranks', rankRoutes);
+app.use('/api/userplayedplots', userPlayedPlotsRoutes);
+app.use('/api/plotcategories', plotCategoryRoutes); 
 
 // 서버 시작
 app.listen(port, '0.0.0.0', () => {
