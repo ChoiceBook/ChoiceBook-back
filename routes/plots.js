@@ -115,6 +115,17 @@ router.delete('/:plot_id', async (req, res) => {
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
+    
+    // Delete from Ranks
+    await connection.query(
+      'DELETE FROM Ranks WHERE item_id IN (SELECT item_id FROM Items WHERE plot_id = ?)',
+      [plot_id]
+    );
+    // Delete from Items
+    await connection.query(
+      'DELETE FROM Items WHERE plot_id = ?',
+      [plot_id]
+    );
 
     // Delete from UserPlayedPlots
     await connection.query(
@@ -149,5 +160,34 @@ router.delete('/:plot_id', async (req, res) => {
     connection.release();
   }
 });
+
+router.get('/:plot_id/users/:user_id/allranks', async (req, res) => {
+  const { plot_id, user_id } = req.params;
+
+  try {
+    const query = `
+      SELECT 
+        r.rank_id, 
+        r.plot_id, 
+        r.user_id, 
+        r.item_id, 
+        i.item_name,  -- Assuming you have item_name in Items table
+        r.rank_value, 
+        r.ranked_at,
+        r.increasement
+      FROM Ranks r
+      JOIN Items i ON r.item_id = i.item_id
+      WHERE r.plot_id = ? AND r.user_id = ?
+      ORDER BY r.ranked_at DESC;
+    `;
+
+    const [rows] = await pool.query(query, [plot_id, user_id]);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching ranks:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+});
+
 
 module.exports = router;

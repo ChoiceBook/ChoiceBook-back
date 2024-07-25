@@ -20,7 +20,7 @@ const port = process.env.PORT || 80; // 포트를 80으로 설정
 
 // 미들웨어 설정
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://kcloudvpn.kaist.ac.kr'],
+  origin: ['http://localhost:3000', 'https://wlsdnqqq17.github.io/'],
   credentials: true
 }));
 
